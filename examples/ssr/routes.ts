@@ -1,4 +1,4 @@
-import {route} from '../route'
+import {route} from 'solarjs/route'
 
 export default {
   home: route('/'),

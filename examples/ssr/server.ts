@@ -1,7 +1,7 @@
-import './_register-for-poc'
+import '../_register-for-poc'
 import {renderPage} from 'solarjs/flare'
 import {matchEntryFile} from 'solarjs/flare/ssr'
-import {server, RequestError} from '../index'
+import {server, RequestError} from 'solarjs'
 
 import routes from './routes'
 import homePage from './pages/home.page'

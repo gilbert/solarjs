@@ -30,7 +30,7 @@ With that said, this pattern might get you pretty far.
 
 ### Pages
 
-From the user's perspective, they write a module to render a page. For example, here's a truncated version of the [POC home page](./poc/pages/home.page.ts):
+From the user's perspective, they write a module to render a page. For example, here's a truncated version of the [SSR POC home page](./examples/ssr/pages/home.page.ts):
 
 ```ts
 import { html, Page } from 'solarjs/flare'
@@ -62,7 +62,7 @@ Unlike react, changing props is **encouranged**. When any page prop changes, the
 
 Like a page, a component renders to HTML on the server. However, a component holds onto internal state on the client.
 
-For example, here is a [Hobbies component](./poc/pages/components/Hobbies.ts) where you can toggle a part of the page:
+For example, here is a [Hobbies component](./examples/ssr/pages/components/Hobbies.ts) where you can toggle a part of the page:
 
 ```ts
 import { html, comp } from 'solarjs/flare'

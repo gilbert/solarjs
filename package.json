@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "poc": "ts-node --files poc/index"
+    "ssr": "ts-node --files examples/ssr/index"
   },
   "keywords": [],
   "author": "",
