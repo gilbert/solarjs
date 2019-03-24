@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "ssr": "ts-node --files examples/ssr/index"
+    "ssr": "ts-node --files examples/ssr/index",
+    "cookie-session": "ts-node --files examples/cookie-session/index"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-session": "^1.3.3",
     "io-ts": "^1.8.2",
     "micro": "^9.3.3",
     "nanohtml": "^1.5.0",
@@ -21,6 +23,7 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
+    "@types/cookie-session": "^2.0.36",
     "@types/micro": "^7.3.3",
     "@types/rollup": "^0.54.0",
     "micro-dev": "^3.0.0",
