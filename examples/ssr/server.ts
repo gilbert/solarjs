@@ -1,6 +1,5 @@
 import '../_register-for-poc'
-import {renderPage} from 'solarjs/flare'
-import {matchEntryFile} from 'solarjs/flare/ssr'
+import {renderPage, matchPage} from 'solarjs/flare/ssr'
 import {server, RequestError} from 'solarjs'
 
 import routes from './routes'
@@ -17,8 +16,8 @@ export default server(async r => {
   else if (m = r.match('GET', routes.user)) {
     return r.send(renderPage(userPage, { user: USERS.get(m.username) }, 'user.page.ts'))
   }
-  else if (m = matchEntryFile(r)) {
-    return r.send(await m.bundle(__dirname + '/pages'))
+  else if (m = matchPage(r)) {
+    return r.send(await m.bundlePage(__dirname + '/pages'))
   }
   throw new RequestError(404, 'not_found')
 })

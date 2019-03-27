@@ -51,12 +51,6 @@ export function Page<Props>(
 }
 
 
-export function renderPage <Props, State extends Props>(state: State, Page: (props: Props) => HTMLElement) {
-  const html = Page(state)
-  App.root = Page
-  return html
-}
-
 class Self<State> {
   private _state: any
   constructor(public id: string, private onStateChange: (self: Self<State>) => void) {}

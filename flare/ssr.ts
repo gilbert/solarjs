@@ -9,7 +9,25 @@ const typescript = require('rollup-plugin-typescript')
 const nodeResolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 
-export function bundlePage (src: string) {
+export function renderPage <Props>(
+  Page: (props: Props) => HTMLElement,
+  props: Props,
+  src: string,
+) {
+  const html = Page(props)
+
+  return `
+    <div id="root">
+      ${html}
+    </div>
+    <script>
+      window.FLARE_PROPS = ${JSON.stringify(props)}
+    </script>
+    <script src="/entry/${src}"></script>
+  `
+}
+
+function bundlePage (src: string) {
   return rollup({
     input: src,
     treeshake: true,
@@ -22,11 +40,9 @@ export function bundlePage (src: string) {
       {
         resolveId(path) {
           if (path === 'solarjs/flare') {
-            console.log("CAUGHT1", path)
             return require.resolve('./browser.ts')
           }
           if (path === 'nanohtml') {
-            console.log("CAUGHT2", path)
             return require.resolve('nanohtml/lib/browser.js')
           }
           return null
@@ -44,13 +60,13 @@ export function bundlePage (src: string) {
 //
 const entry = route('/entry/:pageName', { pageName: 'str' })
 
-export function matchEntryFile (r: Request<'new', any>) {
+export function matchPage (r: Request<'new', any>) {
   let m;
   if (m = r.match('GET', entry)) {
     const {pageName} = m
     return {
       pageName,
-      async bundle(pageDir: string) {
+      async bundlePage(pageDir: string) {
         const bundle = await bundlePage(normalize(pageDir + '/' + pageName))
         const result = await bundle.generate({ format: 'iife', name: 'Page' })
         return result.output[0].code

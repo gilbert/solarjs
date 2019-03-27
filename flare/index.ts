@@ -2,24 +2,6 @@ import html from 'nanohtml'
 
 export {html}
 
-export function renderPage <Props>(
-  Page: (props: Props) => HTMLElement,
-  props: Props,
-  src: string,
-) {
-  const html = Page(props)
-
-  return `
-    <div id="root">
-      ${html}
-    </div>
-    <script>
-      window.FLARE_PROPS = ${JSON.stringify(props)}
-    </script>
-    <script src="/entry/${src}"></script>
-  `
-}
-
 export function Page<State>(
   Page: (state: State) => HTMLElement,
   _initialState: State = {} as any,
