@@ -1,4 +1,4 @@
-import {Request} from './server/server'
+import {Request} from '../server/server'
 import configure from 'cookie-session'
 
 type Options = Parameters<typeof configure>[0]
