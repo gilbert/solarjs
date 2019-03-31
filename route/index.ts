@@ -12,7 +12,10 @@ type ParamType = keyof ParamTypeMap
 
 type ParamTypeToTS<T extends ParamType> = ParamTypeMap[T]
 
-type ExtendRoute<T,R> = R extends Route<infer U> ? Route<T & U> : R
+type ExtendRoute<T,R>
+  = R extends Route<[]> ? Route<T> // Don't merge a route that has no parameters
+  : R extends Route<infer U> ? Route<T & U>
+  : R
 
 
 export class Route<T> {
@@ -20,7 +23,7 @@ export class Route<T> {
   private _re: RegExp
   private _re_p: RegExp
   private _keys: Key[]
-  constructor(private _path: string, private _params: Record<string,string>) {
+  constructor(private _path: string, private _params: Record<string,string>={}) {
     this._keys = []
     this._re = pathToRegexp(this._path, this._keys)
     this._re_p = pathToRegexp(this._path, undefined, { end: false })
@@ -69,12 +72,19 @@ export class Route<T> {
     return this._match(url, { partial: true })
   }
 
-  link(_params: T): string {
+  link(..._params: (T extends [] ? [] : [T])) {
     return this._c(_params)
   }
 }
 
+export function route<_, Params, Children, T>(path: string): Route<[]>
 
+export function route <
+  P extends ParamType,
+  Params extends { [_: string]: P },
+  Children = unknown,
+  T = { [K in keyof Params]: ParamTypeToTS<Params[K]> }
+>(path: string, params: Params): Route<T>
 
 export function route <
   P extends ParamType,
@@ -83,7 +93,18 @@ export function route <
   T = { [K in keyof Params]: ParamTypeToTS<Params[K]> }
 >(
   path: string,
-  params: Params={} as Params,
+  params: Params,
+  children: Children,
+): Route<T> & { [K2 in keyof Children]: ExtendRoute<T, Children[K2]> }
+
+export function route <
+  P extends ParamType,
+  Params extends { [_: string]: P }={},
+  Children extends { [_: string]: Route<any> } | unknown = unknown,
+  T = { [K in keyof Params]: ParamTypeToTS<Params[K]> }
+>(
+  path: string,
+  params?: Params,
   children?: Children,
 )
   : Route<T> & { [K2 in keyof Children]: ExtendRoute<T, Children[K2]> }
@@ -93,13 +114,15 @@ export function route <
 
   const result: any = route
 
-  for (let key in children) {
-    const childRoute = children[key] as any
+  if (children) {
+    for (let key in children) {
+      const childRoute = children[key] as any
 
-    result[key] = new Route(
-      urlJoin(result._path, childRoute._path),
-      { ...result._params, ...childRoute._params }
-    )
+      result[key] = new Route(
+        urlJoin(result._path, childRoute._path),
+        { ...result._params, ...childRoute._params }
+      )
+    }
   }
 
   return result

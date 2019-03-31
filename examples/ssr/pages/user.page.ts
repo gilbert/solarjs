@@ -20,7 +20,7 @@ export default Page((props: Props) =>
 
     ${Hobbies('hobbies', { hobbies: props.user.hobbies })}
 
-    <p><a href=${routes.home.link({})}>Go Home</a></p>
+    <p><a href=${routes.home.link()}>Go Home</a></p>
   `)
 
 function notFound () {
