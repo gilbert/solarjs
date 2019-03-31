@@ -1,13 +1,12 @@
 import '../_register-for-poc'
-import {renderPage, matchPage} from 'solarjs/flare/ssr'
-import {server, RequestError} from 'solarjs'
+import {bareServer, RequestError, renderPage, matchPage} from 'solarjs'
 
 import routes from './routes'
 import homePage from './pages/home.page'
 import userPage from './pages/user.page'
 
 
-export default server(async r => {
+export default bareServer(async r => {
   let m;
   if (r.match('GET', routes.home)) {
     const usernames = ['alice', 'bob']

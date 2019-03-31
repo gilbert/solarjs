@@ -8,7 +8,7 @@ type Handler = (r: NewRequest) => Promise<FullRequest>
 // Request
 //
 type NewRequest = Request<'new', {}>;
-type FullRequest = Request<'full', any>;
+export type FullRequest = Request<'full', any>;
 
 type ResHeaders = Record<string,string>
 
@@ -91,7 +91,8 @@ export class RequestError extends Error {
   }
 }
 
-export function server (handler: Handler) {
+/** A bare serer without all the bells and whistles. */
+export function bareServer (handler: Handler) {
   return async function microWrap (req: IncomingMessage, res: ServerResponse) {
     try {
       const result = await handler(new Request('new', {}, req, res))
@@ -106,6 +107,9 @@ export function server (handler: Handler) {
         }))
       }
       else {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(err)
+        }
         res.writeHead(500)
         res.end(JSON.stringify({
           error: 'unexpected_error',

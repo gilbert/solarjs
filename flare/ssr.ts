@@ -1,18 +1,17 @@
 //
 // Page bundler for browser
 //
-import {Request} from '../server/server'
+import {Request} from '../server/bare-server'
 import {route} from '../route'
 import {rollup} from 'rollup'
 import {normalize} from 'path'
-const typescript = require('rollup-plugin-typescript')
 const nodeResolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 
 export function renderPage <Props>(
   Page: (props: Props) => HTMLElement,
   props: Props,
-  src: string,
+  pageName: string,
 ) {
   const html = Page(props)
 
@@ -23,7 +22,7 @@ export function renderPage <Props>(
     <script>
       window.FLARE_PROPS = ${JSON.stringify(props)}
     </script>
-    <script src="/entry/${src}"></script>
+    <script src="/entry/${pageName}.js"></script>
   `
 }
 
@@ -40,7 +39,7 @@ function bundlePage (src: string) {
       {
         resolveId(path) {
           if (path === 'solarjs/flare') {
-            return require.resolve('./browser.ts')
+            return require.resolve('./browser.js')
           }
           if (path === 'nanohtml') {
             return require.resolve('nanohtml/lib/browser.js')
@@ -48,7 +47,6 @@ function bundlePage (src: string) {
           return null
         },
       },
-      typescript(),
       nodeResolve({ jsnext: true, main: true, browser: true }),
       commonjs(),
     ]

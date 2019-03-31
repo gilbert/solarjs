@@ -1,5 +1,5 @@
 import pathToRegexp, {Key} from 'path-to-regexp'
-import urlJoin = require('url-join')
+const urlJoin = require('url-join') as (a: string, b: string) => string
 
 //
 // Router
@@ -113,3 +113,5 @@ function decodeParam(param: string) {
     throw new Error('failed to decode param "' + param + '"');
   }
 }
+
+export const rpcRoute = route('/rpc/:proc', { proc: 'str' })

@@ -1,5 +1,5 @@
 import * as t from 'io-ts'
-import {RequestError} from './server'
+import {RequestError} from './bare-server'
 
 export {t} // Re-export for convenience
 
