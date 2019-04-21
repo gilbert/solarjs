@@ -3,6 +3,7 @@
 //
 import {Request} from '../server/bare-server'
 import {route} from '../route'
+import {getStylesheets, getTitle} from './index'
 import {rollup} from 'rollup'
 import {normalize} from 'path'
 const nodeResolve = require('rollup-plugin-node-resolve')
@@ -14,8 +15,15 @@ export function renderPage <Props>(
   pageName: string,
 ) {
   const html = Page(props)
+  const stylesheets = getStylesheets()
 
   return `
+    <!doctype html>
+    <title>${getTitle()}</title>
+    <link rel="stylesheet" type="text/css" href="/public/global.css">
+    ${Object.keys(stylesheets).map(id =>
+      `<style data-id="${id}">${stylesheets[id]}</style>`
+    ).join('\n')}
     <div id="root">
       ${html}
     </div>

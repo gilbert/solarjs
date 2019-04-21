@@ -7,6 +7,7 @@ const urlJoin = require('url-join') as (a: string, b: string) => string
 type ParamTypeMap = {
   str: string
   num: number
+  many: string[]
 }
 type ParamType = keyof ParamTypeMap
 
@@ -46,6 +47,8 @@ export class Route<T> {
   }
 
   private _match(url: string, options?: { partial?: boolean }): T | null {
+    // Remove query string from url
+    url = url.replace(/\?.*$/, '')
     const re = options && options.partial ? this._re_p : this._re
     let m = re.exec(url)
     if (! m) return null
@@ -72,8 +75,8 @@ export class Route<T> {
     return this._match(url, { partial: true })
   }
 
-  link(..._params: (T extends [] ? [] : [T])) {
-    return this._c(_params)
+  link(..._params: (T extends [] ? [] : [T])): string {
+    return this._c(..._params)
   }
 }
 
@@ -96,6 +99,15 @@ export function route <
   params: Params,
   children: Children,
 ): Route<T> & { [K2 in keyof Children]: ExtendRoute<T, Children[K2]> }
+
+export function route <
+  P extends ParamType,
+  Children extends { [_: string]: Route<any> } | unknown = unknown,
+>(
+  path: string,
+  params: undefined,
+  children: Children,
+): Route<[]> & Children
 
 export function route <
   P extends ParamType,
@@ -137,4 +149,5 @@ function decodeParam(param: string) {
   }
 }
 
-export const rpcRoute = route('/rpc/:proc', { proc: 'str' })
+export let rpcRoute = route('/rpc/:proc', { proc: 'str' })
+export let publicRoute = route('/public/:path+', { path: 'many' })

@@ -1,6 +1,7 @@
 import {IncomingMessage, ServerResponse} from 'http'
 import {Route} from '../route'
 import {json, buffer} from 'micro'
+import {Readable} from 'stream'
 
 type Handler = (r: NewRequest) => Promise<FullRequest>
 
@@ -10,7 +11,7 @@ type Handler = (r: NewRequest) => Promise<FullRequest>
 type NewRequest = Request<'new', {}>;
 export type FullRequest = Request<'full', any>;
 
-type ResHeaders = Record<string,string>
+type ResHeaders = Record<string,string | undefined>
 
 type ResState = 'new' | 'full'
 
@@ -20,26 +21,34 @@ export class Request<S extends ResState, Ctx> {
     public ctx: Ctx,
     public req: IncomingMessage,
     private _res: ServerResponse,
-    public readonly headers: ResHeaders = {},
-    public readonly status = 0,
-    public readonly body = '',
+    public readonly responseHeaders: ResHeaders = {},
+    public readonly responseStatus = 200,
+    public readonly body: string | Readable = '',
   ) {
     if (! (req as any).state) { (req as any).state = {} }
   }
 
+  /**
+   * Creates a new request with set headers.
+   * To delete, set a header value to `undefined`
+   **/
   setHeaders(headers: ResHeaders) {
-    return new Request(this._s, this.ctx, this.req, this._res, {...this.headers, ...headers}, this.status, this.body)
+    const newHeaders = { ...this.responseHeaders, ...headers }
+    return new Request(this._s, this.ctx, this.req, this._res, newHeaders, this.responseStatus, this.body)
+  }
+  setStatus(status: number) {
+    return new Request(this._s, this.ctx, this.req, this._res, this.responseHeaders, status, this.body)
   }
 
-  send<ctx>(this: Request<'new', ctx>, body: string | object) {
-    if (typeof body !== 'string') {
+  send<ctx>(this: Request<'new', ctx>, body: string | object | Readable) {
+    if (!isStream(body) && typeof body !== 'string') {
       body = JSON.stringify(body)
     }
-    return new Request('full', this.ctx, this.req, this._res, this.headers, this.status, body)
+    return new Request('full', this.ctx, this.req, this._res, this.responseHeaders, this.responseStatus, body)
   }
 
   assign<T>(data: T) {
-    return new Request(this._s, { ...this.ctx, ...data }, this.req, this._res, this.headers, this.status, this.body)
+    return new Request(this._s, { ...this.ctx, ...data }, this.req, this._res, this.responseHeaders, this.responseStatus, this.body)
   }
 
   get url(): string {
@@ -96,7 +105,13 @@ export function bareServer (handler: Handler) {
   return async function microWrap (req: IncomingMessage, res: ServerResponse) {
     try {
       const result = await handler(new Request('new', {}, req, res))
-      res.end(result.body)
+      res.writeHead(result.responseStatus, result.responseHeaders)
+      if (isStream(result.body)) {
+        result.body.pipe(res)
+      }
+      else {
+        res.end(result.body)
+      }
     }
     catch(err) {
       if (err instanceof RequestError) {
@@ -118,4 +133,8 @@ export function bareServer (handler: Handler) {
       }
     }
   }
+}
+
+function isStream(obj: any): obj is Readable {
+  return typeof obj.pipe === 'function'
 }
