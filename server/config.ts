@@ -53,6 +53,10 @@ export function read<T>(
   const val = process.env[key]
   if (val === undefined || val === '') {
     if (defaultValue !== undefined) {
+      // Since value is unset, set it here so 3rd party
+      // code can read default value
+      process.env[key] = defaultValue
+
       return parse ? parse(defaultValue) : defaultValue
     }
     throw new Error(`[config] Please set ${key}`)
