@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('dotenv').config()
 var config = require(process.cwd() + '/dist/server/config')
 
 //
