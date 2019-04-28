@@ -1,6 +1,10 @@
 node_modules/
 pkg/
-*.js
+examples/**/*.js
+solarjs/**/*.js
+solar-dev/**/*.js
+!solar-dev/bin/*.js
 *.d.ts
 *.d.ts.map
 package-lock.json
+.DS_Store

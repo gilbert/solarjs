@@ -1,4 +1,4 @@
-import diff from 'nanomorph'
+const diff = require('nanomorph')
 import html from 'nanohtml'
 export {diff, html}
 

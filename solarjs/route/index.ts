@@ -150,4 +150,5 @@ function decodeParam(param: string) {
 }
 
 export let rpcRoute = route('/rpc/:proc', { proc: 'str' })
+export let stylesRoute = route('/styles/:entry', { entry: 'str' })
 export let publicRoute = route('/public/:path+', { path: 'many' })

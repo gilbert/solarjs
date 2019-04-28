@@ -125,4 +125,3 @@ function _create(target: any, ignoreMap: Record<string,boolean>, validator: Vali
 
   return new Proxy(target, <any>proxyHandler)
 }
-
