@@ -1,6 +1,7 @@
-import html from 'nanohtml'
 
-export {html}
+type InterpolationValue = string | number | boolean | ComponentRoot | Function
+export const html: (htmlPieces: TemplateStringsArray, ...values: (InterpolationValue | InterpolationValue[])[]) => any = require('nanohtml')
+export const raw: (html: string) => string = require('nanohtml/raw')
 
 export function Page<State>(
   Page: (state: State) => HTMLElement,
