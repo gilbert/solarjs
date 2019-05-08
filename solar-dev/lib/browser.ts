@@ -1,6 +1,7 @@
 const diff = require('nanomorph')
+const raw = require('nanohtml/raw')
 import html from 'nanohtml'
-export {diff, html}
+export {diff, html, raw}
 
 import {observe} from './observe'
 
