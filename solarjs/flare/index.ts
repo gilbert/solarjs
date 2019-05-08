@@ -1,5 +1,6 @@
 
-type InterpolationValue = string | number | boolean | ComponentRoot | Function
+type ObjectWithOuterHtml = { outerHTML: string }
+type InterpolationValue = string | number | boolean | ComponentRoot | Function | ObjectWithOuterHtml
 export const html: (htmlPieces: TemplateStringsArray, ...values: (InterpolationValue | InterpolationValue[])[]) => any = require('nanohtml')
 export const raw: (html: string) => string = require('nanohtml/raw')
 
