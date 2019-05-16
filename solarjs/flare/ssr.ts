@@ -2,7 +2,7 @@
 // Page bundler for browser
 //
 import {Request} from '../server/bare-server'
-import {route} from '../route'
+import {pagesRoute} from '../route'
 import {getStylesheets, getTitle} from './index'
 import {normalize} from 'path'
 import {JSX} from 'preact'
@@ -24,6 +24,7 @@ export default function my_page () {
   return &lt;h1&gt;Hi!&lt;/h1&gt;
 }
 </pre>
+      <p>Where <code>my_page</code> corresponds to a file named <code>client/pages/my_page.entry.ts</code></p>
     `
   }
 
@@ -34,7 +35,7 @@ export default function my_page () {
     <!doctype html>
     <title>${getTitle()}</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/assets/styles/global.entry.css">
     ${Object.keys(stylesheets).map(id =>
       `<style data-id="${id}">${stylesheets[id]}</style>`
     ).join('\n')}
@@ -44,15 +45,13 @@ export default function my_page () {
     <script>
       window.__PAGE_PROPS__ = ${JSON.stringify(props)}
     </script>
-    <script src="/pages/${Page.name}.page.js"></script>
+    <script src="/assets/pages/${Page.name}.entry.js"></script>
   `
 }
 
 //
 // Route match helper for convenience
 //
-const pagesRoute = route('/pages/:pageName(.+\\.page\\.js)', { pageName: 'str' })
-
 export function matchPage (r: Request<'new', any>) {
   let m;
   if (m = r.match('GET', pagesRoute)) {

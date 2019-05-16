@@ -153,6 +153,7 @@ function decodeParam(param: string) {
   }
 }
 
-export let rpcRoute = route('/rpc/:proc', { proc: 'str' })
-export let stylesRoute = route('/styles/:entry', { entry: 'str' })
-export let publicRoute = route('/public/:path+', { path: 'many' })
+export let rpcRoute    = route('/rpc/:proc', { proc: 'str' })
+export let pagesRoute  = route('/assets/pages/:pageName(.+\\.entry\\.js)', { pageName: 'str' })
+export let stylesRoute = route('/assets/styles/:entry(.+\\.entry\\.js)', { entry: 'str' })
+export let publicRoute = route('/assets/:path+', { path: 'many' })
