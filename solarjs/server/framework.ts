@@ -46,7 +46,7 @@ export function server<Session>(serverDir: string, handler: Handler<{ session: S
     else if (m = matchPage(r)) {
       return r.send(await m.bundlePage(pageDir))
     }
-    else if ((m = r.match('GET', stylesRoute)) && m.entry.match(/\.entry\.css$/)) {
+    else if ((m = r.match('GET', stylesRoute))) {
       //
       // TODO: Implement production behavior
       //
