@@ -19,8 +19,7 @@ let sheets: Record<string, string> = {}
 
 export function css(id: string, styles: string) {
   return {
-    // Hack to handle interpolating within a nanohtml template
-    get outerHTML() {
+    inject() {
       if (!sheets[id]) {
         sheets[id] = styles
       }
