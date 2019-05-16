@@ -18,48 +18,49 @@ type ExtendRoute<T,R>
   : R extends Route<infer U> ? Route<T & U>
   : R
 
+export type Route<T> = {
+  match: (url: string) => ParamsOrEmpty<T> | null
+  match_p: (url: string) => ParamsOrEmpty<T> | null
+  link: (..._params: (T extends [] ? [] : [T])) => string
+}
 
-export class Route<T> {
-  private _c: Function
-  private _re: RegExp
-  private _re_p: RegExp
-  private _keys: Key[]
-  constructor(private _path: string, private _params: Record<string,string>={}) {
-    this._keys = []
-    this._re = pathToRegexp(this._path, this._keys)
-    this._re_p = pathToRegexp(this._path, undefined, { end: false })
-    this._c = pathToRegexp.compile(this._path)
+type ParamsOrEmpty<T> = T extends [] ? {} : T
 
-    const targetKeys = Object.keys(_params)
-    for (const key of this._keys) {
-      if (typeof key.name === 'number') continue;
-      const i = targetKeys.indexOf(key.name)
-      if (i === -1) {
-        throw new Error(`Param name found in route path string but not in param handlers: ':${key.name
-          }'\n  for route path: ${this._path}`)
-      }
-      targetKeys.splice(i, 1)
+function createRoute<T>(_path: string, _params: Record<string,string>={}): Route<T> {
+  const _keys: Key[] = []
+  const _re = pathToRegexp(_path, _keys)
+  const _re_p = pathToRegexp(_path, undefined, { end: false })
+  const _c = pathToRegexp.compile(_path)
+
+  const targetKeys = Object.keys(_params)
+  for (const key of _keys) {
+    if (typeof key.name === 'number') continue;
+    const i = targetKeys.indexOf(key.name)
+    if (i === -1) {
+      throw new Error(`Param name found in route path string but not in param handlers: ':${key.name
+        }'\n  for route path: ${_path}`)
     }
-
-    if (targetKeys.length > 0) {
-      throw new Error(`No such param for handler: '${targetKeys[0]}'\n  for route path: ${this._path}`)
-    }
+    targetKeys.splice(i, 1)
   }
 
-  private _match(url: string, options?: { partial?: boolean }): T | null {
+  if (targetKeys.length > 0) {
+    throw new Error(`No such param for handler: '${targetKeys[0]}'\n  for route path: ${_path}`)
+  }
+
+  function _match(url: string, options?: { partial?: boolean }): T | null {
     // Remove query string from url
     url = url.replace(/\?.*$/, '')
-    const re = options && options.partial ? this._re_p : this._re
+    const re = options && options.partial ? _re_p : _re
     let m = re.exec(url)
     if (! m) return null
 
     let matchedParams: any = {}
 
-    for (let i = 0; i < this._keys.length; i++) {
-      const key = this._keys[i]
+    for (let i = 0; i < _keys.length; i++) {
+      const key = _keys[i]
       const param = m[i + 1]
       matchedParams[key.name] = decodeParam(param);
-      if (this._params[key.name] === 'num') {
+      if (_params[key.name] === 'num') {
         matchedParams[key.name] = Number(matchedParams[key.name])
       }
       if (key.repeat) matchedParams[key.name] = matchedParams[key.name].split(key.delimiter)
@@ -67,16 +68,19 @@ export class Route<T> {
     return matchedParams
   }
 
-  match(url: string) {
-    return this._match(url)
-  }
+  return {
+    match(url: string) {
+      return _match(url)
+    },
+    match_p(url: string) {
+      return _match(url, { partial: true })
+    },
+    link(..._params: (T extends [] ? [] : [T])): string {
+      return _c(..._params as any)
+    },
 
-  match_p(url: string) {
-    return this._match(url, { partial: true })
-  }
-
-  link(..._params: (T extends [] ? [] : [T])): string {
-    return this._c(..._params)
+    // Do it this way to keep type info hidden from TypeScript
+    ...{ _path, _params } as any
   }
 }
 
@@ -122,7 +126,7 @@ export function route <
   : Route<T> & { [K2 in keyof Children]: ExtendRoute<T, Children[K2]> }
 {
 
-  const route = new Route(path, params)
+  const route = createRoute(path, params)
 
   const result: any = route
 
@@ -130,7 +134,7 @@ export function route <
     for (let key in children) {
       const childRoute = children[key] as any
 
-      result[key] = new Route(
+      result[key] = createRoute(
         urlJoin(result._path, childRoute._path),
         { ...result._params, ...childRoute._params }
       )

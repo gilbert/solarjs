@@ -1,6 +1,6 @@
 {
   "name": "solarjs",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A TypeScript web server library.",
   "main": "index.js",
   "scripts": {
@@ -20,18 +20,16 @@
     "dotenv": "^7.0.0",
     "io-ts": "^1.8.2",
     "micro": "^9.3.3",
-    "nanohtml": "^1.6.1",
-    "nanomorph": "^5.4.0",
-    "nanoraf": "^3.1.0",
     "negotiator": "^0.6.1",
     "ospec": "^3.1.0",
     "path-to-regexp": "^3.0.0",
     "phin": "^3.3.0",
+    "preact": "10.0.0-beta.1",
+    "preact-render-to-string": "^5.0.3",
     "resolve-path": "^1.4.0",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.11",
     "solar-dev": "file:../solar-dev",
     "ts-node": "^8.0.3",
     "tslib": "^1.9.3",

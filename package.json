@@ -16,11 +16,15 @@
   },
   "homepage": "https://github.com/gilbert/solarjs#readme",
   "dependencies": {
+    "micro": "^9.3.4",
+    "micro-dev": "^3.0.0",
+    "nodemon": "^1.19.0",
     "ospec": "^3.1.0",
     "raf": "^3.4.1",
     "solar-dev": "file:solar-dev",
     "solarjs": "file:solarjs",
     "supertest": "^4.0.2",
+    "ts-node": "^8.1.0",
     "typescript": "^3.4.5"
   }
 }

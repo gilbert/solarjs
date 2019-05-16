@@ -61,10 +61,27 @@ o.spec('Route', function () {
       })
     })
     o('parent', () => {
-      o(r.link({ x: 8 })).deepEquals('/page/8')
+      o(r.link({ x: 8 })).equals('/page/8')
     })
     o('child', () => {
-      o(r.inner.link({ x: 2, y: 'foo' })).deepEquals('/page/2/inner/foo')
+      o(r.inner.link({ x: 2, y: 'foo' })).equals('/page/2/inner/foo')
+    })
+  })
+
+  o.spec('bindings', function () {
+    let r;
+    o.before(() => {
+      r = route('/page/:x', { x: 'num' }, {
+        inner: route('/inner/:y', { y: 'str' })
+      })
+    })
+    o('parent', () => {
+      const link = r.link
+      o(link({ x: 10 })).equals('/page/10')
+    })
+    o('child', () => {
+      const link = r.inner.link
+      o(link({ x: 10, y: 'yy' })).equals('/page/10/inner/yy')
     })
   })
 

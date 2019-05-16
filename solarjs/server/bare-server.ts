@@ -83,12 +83,17 @@ export class Request<S extends ResState, Ctx> {
   //
   // Convenience helpers to allow for if-statement assignments
   //
-  match<T>(method: string, route: Route<T>) {
+  match<T>(method: string, route: RouteMatcher<T>) {
     return this.req.method === method && route.match(this.url) || null
   }
-  match_p<T>(method: string, route: Route<T>) {
+  match_p<T>(method: string, route: RouteMatcher<T>) {
     return this.req.method === method && route.match_p(this.url) || null
   }
+}
+
+type RouteMatcher<T> = {
+  match: (url: string) => T | null
+  match_p: (url: string) => T | null
 }
 
 //
