@@ -1,11 +1,13 @@
 import {Route} from '../route'
 
+type NoContext<F> = F extends (params: infer T, ctx?: any) => infer U ? (params: T) => U : never
+
 export function makeRpcClient<T>(route: Route<{ proc: string }>) {
   return new Proxy({}, {
     get(_, proc: string) {
       return rpc.bind(null, route.link({ proc }), proc)
     }
-  }) as T
+  }) as { [Proc in keyof T]: NoContext<T[Proc]> }
 }
 
 async function rpc(endpoint: string, proc: string, arg: any) {

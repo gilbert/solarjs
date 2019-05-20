@@ -6,7 +6,7 @@ export {t} // Re-export for convenience
 
 export function rpc<
   Params extends t.Type<any>,
-  Proc extends (params: t.TypeOf<Params>) => Promise<any>,
+  Proc extends (params: t.TypeOf<Params>, ctx?: any) => Promise<any>,
 >(params: Params, proc: Proc): Proc
 {
   const strictParams = t.exact(params as any)

@@ -1,7 +1,7 @@
 import {bareServer, RequestError, Request, FullRequest} from './bare-server'
 import {configureCookieSession} from '../cookie-session'
 import {matchPage} from '../flare/ssr'
-import {rpcRoute, publicRoute, stylesRoute} from '../route'
+import {publicRoute, stylesRoute} from '../route'
 import {sendFile} from './send-file';
 import path from 'path'
 
@@ -25,7 +25,6 @@ export function server<Session>(serverDir: string, handler: Handler<{ session: S
 
     if (r2) {
       if (config.isDev && (
-        r.match('POST', rpcRoute) ||
         r.match('GET', stylesRoute) ||
         r.match('GET', publicRoute) ||
         matchPage(r)
@@ -35,15 +34,7 @@ export function server<Session>(serverDir: string, handler: Handler<{ session: S
       return r2
     }
 
-    if (m = r.match('POST', rpcRoute)) {
-      const procs = await import(`${serverDir}/procs`)
-      if (! procs[m.proc]) {
-        throw new RequestError(404, 'not_found', { reason: `No such propc: ${m.proc}` })
-      }
-      const result = await procs[m.proc](await r.json()) // TODO: Match JSON-RPC standard
-      return r.send(JSON.stringify(result)) // TODO: Match JSON-RPC standard
-    }
-    else if (m = matchPage(r)) {
+    if (m = matchPage(r)) {
       return r.send(await m.bundlePage(pageDir))
     }
     else if ((m = r.match('GET', stylesRoute))) {
