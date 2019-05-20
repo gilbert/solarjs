@@ -10,11 +10,11 @@ export function rpc<
 >(params: Params, proc: Proc): Proc
 {
   const strictParams = t.exact(params as any)
-  const safeProc: any = (clientArgs: t.TypeOf<Params>) => {
+  const safeProc: any = (clientArgs: t.TypeOf<Params>, ctx: any) => {
     const value = strictParams.decode(clientArgs).getOrElseL(errors => {
       throw new RpcInvalidParamsError(clientArgs, errors)
     })
-    return proc(value)
+    return proc(value, ctx)
   }
   return safeProc
 }
