@@ -2,17 +2,17 @@ import '../_register-for-poc'
 import {configureCookieSession} from 'solarjs/cookie-session'
 import {bareServer} from 'solarjs'
 
-const session = configureCookieSession<{ visitCount?: number }>({
+const Session = configureCookieSession<{ visitCount?: number }>({
   secret: 'abc-example'
 })
 
-export default bareServer(async r1 => {
-  const r2 = session(r1)
+export default bareServer(async r => {
+  const session = Session.get(r)
 
-  const count = r2.ctx.session.visitCount || 0
-  r2.ctx.session.visitCount = count + 1
+  const count = session.visitCount || 0
+  session.visitCount = count + 1
 
-  return r2.send(`
+  return r.send(`
     <!doctype html>
     <title>Cookies!</title>
 

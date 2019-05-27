@@ -1,5 +1,4 @@
 import {bareServer, RequestError, Request, FullRequest} from './bare-server'
-import {configureCookieSession} from '../cookie-session'
 import {matchPage} from '../flare/ssr'
 import {publicRoute, stylesRoute} from '../route'
 import {sendFile} from './send-file';
@@ -9,31 +8,17 @@ const resolvePath = require('resolve-path')
 
 type Handler<T> = (r: Request<'new', T>) => Promise<null | FullRequest>
 
-/** A server with SSR, RPC, and cookie sessions */
-export function server<Session>(serverDir: string, handler: Handler<{ session: Session }>) {
+/** A server with SSR, RPC, and cookie sessions */2
+export function server(serverDir: string, handler: Handler<{}>) {
 
   const config = require(serverDir + '/config')
   const cssDir = path.join(serverDir, '../../client/styles')
   const pageDir = path.join(serverDir, '../client/pages')
   const publicDir = path.join(serverDir, '../../public')
-  const cookieSession = configureCookieSession<Session>({ secret: config.session_secret })
 
-  const _server = bareServer(async _r => {
-    let m, r = cookieSession(_r)
+  const _server = bareServer(async r => {
 
-    const r2 = await handler(r)
-
-    if (r2) {
-      if (config.isDev && (
-        r.match('GET', stylesRoute) ||
-        r.match('GET', publicRoute) ||
-        matchPage(r)
-      )) {
-        console.warn('~~~~\n~~~\n~~\n  [solar] WARNING: Your server response is blocking a framework route.\n~~\n~~~\n~~~~')
-      }
-      return r2
-    }
-
+    let m
     if (m = matchPage(r)) {
       return r.send(await m.bundlePage(pageDir))
     }
@@ -51,9 +36,14 @@ export function server<Session>(serverDir: string, handler: Handler<{ session: S
         isDev: config.isDev,
       })
     }
-    else {
+
+    const r2 = await handler(r)
+
+    if (!r2) {
+      // TODO: 404.html
       throw new RequestError(404, 'not_found')
     }
+    return r2
   })
 
   return _server

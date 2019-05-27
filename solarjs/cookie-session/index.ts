@@ -12,10 +12,26 @@ export function configureCookieSession<Session>(options: Options = {}) {
     }
   }
 
-  const cookieSession = configure(options)
-  return function setSession<T>(r: Request<'new', T>) {
-    // cookie-session is synchronous so we don't have to worry about async
-    cookieSession(r.req as any, r.dangerouslyGetRes() as any, () => {})
-    return r.assign({ session: (r.req as any).session as Session })
+  const cookieSession = configure({
+    ...options,
+    name: options.name || 'solar_session',
+  })
+
+  const ensureCookieMiddlewareHasBeenApplied = (r: Request<any,any>) => {
+    if (! (r.req as any).session) {
+      // cookie-session is synchronous so we don't have to worry about async
+      cookieSession(r.req as any, r.dangerouslyGetRes() as any, () => {})
+    }
+  }
+
+  return {
+    get(r: Request<any, any>) {
+      ensureCookieMiddlewareHasBeenApplied(r)
+      return (r.req as any).session as Session
+    },
+    set(r: Request<any, any>, sessionData: Session) {
+      ensureCookieMiddlewareHasBeenApplied(r)
+      ;(r.req as any).session = sessionData
+    }
   }
 }

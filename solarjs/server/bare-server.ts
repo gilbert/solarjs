@@ -40,6 +40,10 @@ export class Request<S extends ResState, Ctx> {
     return new Request(this._s, this.ctx, this.req, this._res, this.responseHeaders, status, this.body)
   }
 
+  redirect<ctx>(this: Request<'new',ctx>, location: string, statusCode=302): Request<'full', ctx> {
+    return this.setStatus(statusCode).setHeaders({ location }).send('')
+  }
+
   send<ctx>(this: Request<'new', ctx>, body: string | object | Readable) {
     if (!isStream(body) && typeof body !== 'string') {
       body = JSON.stringify(body)
