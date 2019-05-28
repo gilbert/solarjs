@@ -155,4 +155,4 @@ function decodeParam(param: string) {
 
 export let pagesRoute  = route('/assets/pages/:pageName(.+\\.entry\\.js)', { pageName: 'str' })
 export let stylesRoute = route('/assets/styles/:entry(.+\\.entry\\.css)', { entry: 'str' })
-export let publicRoute = route('/assets/:path+', { path: 'many' })
+export let publicRoute = route('/assets/public/:path+', { path: 'many' })
