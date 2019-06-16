@@ -10,6 +10,8 @@ const app = bareServer(async r => {
   if (r.url === '/1') return r.send('one')
   if (r.url === '/2') return r.send('two')
 
+  if (r.match('GET', router.echoQuery)) return r.send(r.query)
+
   if (r.match('GET', router.abc)) return r.send('def')
   if (r.match_p('GET', router.abc)) return r.send('xyz')
 
@@ -39,6 +41,7 @@ const router = {
   par: route('/par/:x', { x: 'num' }),
   parAlt: route('/par-alt/:x', { x: 'num' }),
   rpc: route('/rpc/:proc', { proc: 'str' }),
+  echoQuery: route('/echo-query'),
 }
 
 o.spec('Bare Server', function () {
@@ -94,6 +97,14 @@ o.spec('Bare Server', function () {
       const res = await request(app).post('/par/4').send('i am not json')
       o(res.status).equals(400)
       o(JSON.parse(res.text)).deepEquals({ error: 'invalid_json' })
+    })
+  })
+
+  o.spec('helpers', function () {
+    o('query', async () => {
+      const res = await request(app).get('/echo-query?xs=10&y=20&xs=11').send('hmm')
+      console.log("wut", res.text)
+      o(JSON.parse(res.text)).deepEquals({ xs: ['10','11'], y: ['20'] })
     })
   })
 

@@ -1,3 +1,4 @@
+import qs from 'querystring'
 import {IncomingMessage, ServerResponse} from 'http'
 import {Route} from '../route'
 import {json, buffer} from 'micro'
@@ -15,11 +16,15 @@ type ResHeaders = Record<string,string | undefined>
 
 type ResState = 'new' | 'full'
 
+type Req = IncomingMessage & {
+  query?: Record<string, string[]>
+}
+
 export class Request<S extends ResState, Ctx> {
   constructor(
     private _s: S,
     public ctx: Ctx,
-    public req: IncomingMessage,
+    public req: Req,
     private _res: ServerResponse,
     public readonly responseHeaders: ResHeaders = {},
     public readonly responseStatus = 200,
@@ -60,6 +65,17 @@ export class Request<S extends ResState, Ctx> {
   }
   get method(): string {
     return this.req.method || ''
+  }
+  get query() {
+    if (!this.req.query) {
+      const parsed = qs.parse(this.req.url!.split('?')[1])
+      this.req.query = {}
+      for (let key in parsed) {
+        const val = parsed[key]
+        this.req.query[key] = typeof val === 'string' ? [val] : val
+      }
+    }
+    return this.req.query
   }
 
   json() {
