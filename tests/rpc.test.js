@@ -18,7 +18,7 @@ o.spec('RPC', function () {
       throw new Error('should not get here')
     }
     catch (err) {
-      o(err instanceof RpcError).equals(true)
+      o(err.message).equals('invalid_rpc_params')
     }
   })
 })

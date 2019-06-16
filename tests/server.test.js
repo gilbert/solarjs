@@ -101,7 +101,9 @@ o.spec('Bare Server', function () {
     o('bad params', async () => {
       const res = await request(app).post('/rpc/lack').send({ y: 20 })
       o(res.status).equals(400)
-      o(JSON.parse(res.text)).deepEquals({ error: 'invalid_parameters' })
+      const body = JSON.parse(res.text)
+      o(body.error).equals('invalid_rpc_params')
+      o(typeof body.data).equals('object')
     })
 
     o('runtime error', async () => {
