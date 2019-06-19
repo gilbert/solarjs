@@ -4,7 +4,7 @@ import configure from 'cookie-session'
 type Options = Parameters<typeof configure>[0]
 
 /** Full docs: https://www.npmjs.com/package/cookie-session */
-export function configureCookieSession<Session>(options: Options = {}) {
+export function configureCookieSession<Session, Flash extends Record<any,any>>(options: Options = {}) {
   if (! options.keys && ! options.secret) {
     options.secret = process.env.SESSION_SECRET
     if (! options.secret) {
@@ -18,20 +18,47 @@ export function configureCookieSession<Session>(options: Options = {}) {
   })
 
   const ensureCookieMiddlewareHasBeenApplied = (r: Request<any,any>) => {
-    if (! (r.req as any).session) {
+    const req = r.req as any
+    if (! req.session) {
       // cookie-session is synchronous so we don't have to worry about async
-      cookieSession(r.req as any, r.dangerouslyGetRes() as any, () => {})
+      cookieSession(req, r.dangerouslyGetRes() as any, () => {})
+      // Init now for consistency
+      req.session.flash = {}
     }
   }
 
   return {
     get(r: Request<any, any>) {
       ensureCookieMiddlewareHasBeenApplied(r)
-      return (r.req as any).session as Session
+
+      // Close over req so session and flash are consistent across .set() calls
+      const req = r.req as any
+
+      const sessionWrapper = Object.create(req.session) as Session & {
+        /** WARNING: This is destructive. Only call this once per request! */
+        flash(): Flash
+        flash<Key extends keyof Flash>(name: Key, value: Flash[Key]): void
+      }
+
+      sessionWrapper.flash = function (name?: any, value?: any) {
+        if (name === undefined && value === undefined) {
+          const temp = req.session.flash || {}
+          req.session.flash = {}
+          return temp
+        }
+        req.session.flash[name] = value
+      }
+
+      return sessionWrapper
     },
     set(r: Request<any, any>, sessionData: Session) {
       ensureCookieMiddlewareHasBeenApplied(r)
-      ;(r.req as any).session = sessionData
-    }
+      const req = r.req as any
+
+      // Persist flash across all .set() calls
+      const temp = req.session.flash
+      req.session = sessionData
+      req.session.flash = temp
+    },
   }
 }

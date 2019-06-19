@@ -13,10 +13,14 @@ type ParamType = keyof ParamTypeMap
 
 type ParamTypeToTS<T extends ParamType> = ParamTypeMap[T]
 
-type ExtendRoute<T,R>
-  = R extends Route<[]> ? Route<T> // Don't merge a route that has no parameters
-  : R extends Route<infer U> ? Route<T & U>
-  : R
+type Without<T, K> = Pick<T, Exclude<keyof T, K>>
+
+type ExtendChildRoute<ParentT,ChildR>
+  = ChildR extends Route<[]> ? Route<ParentT> /* Don't merge empty route params */ & { [k in keyof Without<ChildR, RouteKeys>]: ExtendChildRoute<ParentT, ChildR[k]> }
+  : ChildR extends Route<infer ChildT> ? Route<ParentT & ChildT> & { [k in keyof Without<ChildR, RouteKeys>]: ExtendChildRoute<ParentT & ChildT, ChildR[k]> }
+  : ChildR
+
+type RouteKeys = keyof Route<[]>
 
 export type Route<T> = {
   match: (url: string) => ParamsOrEmpty<T> | null
@@ -26,11 +30,12 @@ export type Route<T> = {
 
 type ParamsOrEmpty<T> = T extends [] ? {} : T
 
-function createRoute<T>(_path: string, _params: Record<string,string>={}): Route<T> {
+function createRoute(prefix: string, _path: string, _params: Record<string,string>, children: Record<string,Route<any>>): any {
+  const _fullPath = urlJoin(prefix, _path)
   const _keys: Key[] = []
-  const _re = pathToRegexp(_path, _keys)
-  const _re_p = pathToRegexp(_path, undefined, { end: false })
-  const _c = pathToRegexp.compile(_path)
+  const _re = pathToRegexp(_fullPath, _keys)
+  const _re_p = pathToRegexp(_fullPath, undefined, { end: false })
+  const _c = pathToRegexp.compile(_fullPath)
 
   const targetKeys = Object.keys(_params)
   for (const key of _keys) {
@@ -68,20 +73,34 @@ function createRoute<T>(_path: string, _params: Record<string,string>={}): Route
     return matchedParams
   }
 
-  return {
+  const _children = {} as Record<string,Route<any>>
+
+  for (let key in children) {
+    const child = children[key] as any
+
+    _children[key] = createRoute(
+      _fullPath,
+      child._path,
+      { ..._params, ...child._params },
+      child._children
+    )
+  }
+
+  return Object.assign({
     match(url: string) {
       return _match(url)
     },
     match_p(url: string) {
       return _match(url, { partial: true })
     },
-    link(..._params: (T extends [] ? [] : [T])): string {
-      return _c(..._params as any)
+    link(..._params: any): string {
+      return _c(..._params)
     },
 
-    // Do it this way to keep type info hidden from TypeScript
-    ...{ _path, _params } as any
-  }
+    // Private! Only used for nested route construction
+    _path, _fullPath, _params, _children,
+
+  }, _children) // Extend here for dx
 }
 
 export function route<_, Params, Children, T>(path: string): Route<[]>
@@ -102,7 +121,7 @@ export function route <
   path: string,
   params: Params,
   children: Children,
-): Route<T> & { [K2 in keyof Children]: ExtendRoute<T, Children[K2]> }
+): Route<T> & { [K2 in keyof Children]: ExtendChildRoute<T, Children[K2]> }
 
 export function route <
   P extends ParamType,
@@ -123,25 +142,9 @@ export function route <
   params?: Params,
   children?: Children,
 )
-  : Route<T> & { [K2 in keyof Children]: ExtendRoute<T, Children[K2]> }
+  : Route<T> & { [K2 in keyof Children]: ExtendChildRoute<T, Children[K2]> }
 {
-
-  const route = createRoute(path, params)
-
-  const result: any = route
-
-  if (children) {
-    for (let key in children) {
-      const childRoute = children[key] as any
-
-      result[key] = createRoute(
-        urlJoin(result._path, childRoute._path),
-        { ...result._params, ...childRoute._params }
-      )
-    }
-  }
-
-  return result
+  return createRoute('/', path, params || {}, (children as any) || {}) as any
 }
 
 function decodeParam(param: string) {

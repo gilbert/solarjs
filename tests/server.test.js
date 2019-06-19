@@ -103,7 +103,6 @@ o.spec('Bare Server', function () {
   o.spec('helpers', function () {
     o('query', async () => {
       const res = await request(app).get('/echo-query?xs=10&y=20&xs=11').send('hmm')
-      console.log("wut", res.text)
       o(JSON.parse(res.text)).deepEquals({ xs: ['10','11'], y: ['20'] })
     })
   })

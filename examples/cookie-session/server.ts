@@ -2,7 +2,7 @@ import '../_register-for-poc'
 import {configureCookieSession} from 'solarjs/cookie-session'
 import {bareServer} from 'solarjs'
 
-const Session = configureCookieSession<{ visitCount?: number }>({
+const Session = configureCookieSession<{ visitCount?: number }, {}>({
   secret: 'abc-example'
 })
 
