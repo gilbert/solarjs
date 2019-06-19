@@ -1,8 +1,11 @@
 //
 // HTML doc helpers
 //
-export function getTitle() { return document.title }
+export function flushTitle() { return document.title }
 export function setTitle(title: string) { document.title = title; return '' }
+
+export function flushHead() { return document.title }
+export function addToHead(_content: string) { return '' }
 
 //
 // CSS support

@@ -2,13 +2,25 @@
 // HTML doc helpers
 //
 let _title = ''
-export function getTitle() {
+export function flushTitle() {
   const temp = _title
   return _title = '', temp
 }
 
 export function setTitle(title: string) {
   _title = title
+  return ''
+}
+
+
+let _head = ''
+export function flushHead() {
+  const temp = _head
+  return _head = '', temp
+}
+
+export function addToHead(content: string) {
+  _head += content
   return ''
 }
 

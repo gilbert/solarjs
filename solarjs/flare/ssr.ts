@@ -3,7 +3,7 @@
 //
 import {Request} from '../server/bare-server'
 import {pagesRoute} from '../route'
-import {getStylesheets, getTitle} from './index'
+import {getStylesheets, flushTitle, flushHead} from './index'
 import {normalize} from 'path'
 import {JSX} from 'preact'
 import {createElement} from 'preact'
@@ -33,9 +33,10 @@ export default function my_page () {
 
   return `
     <!doctype html>
-    <title>${getTitle()}</title>
+    <title>${flushTitle()}</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css" href="/assets/styles/global.entry.css">
+    ${flushHead()}
     ${Object.keys(stylesheets).map(id =>
       `<style data-id="${id}">${stylesheets[id]}</style>`
     ).join('\n')}
