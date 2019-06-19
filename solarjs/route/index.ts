@@ -52,7 +52,7 @@ function createRoute(prefix: string, _path: string, _params: Record<string,strin
     throw new Error(`No such param for handler: '${targetKeys[0]}'\n  for route path: ${_path}`)
   }
 
-  function _match(url: string, options?: { partial?: boolean }): T | null {
+  function _match(url: string, options?: { partial?: boolean }) {
     // Remove query string from url
     url = url.replace(/\?.*$/, '')
     const re = options && options.partial ? _re_p : _re
