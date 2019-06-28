@@ -1,5 +1,5 @@
 const o = require('ospec')
-const {route} = require('solarjs/route')
+const {route, children} = require('solarjs/route')
 
 o.spec('Route', function () {
 
