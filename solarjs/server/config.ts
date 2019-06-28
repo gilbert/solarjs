@@ -76,7 +76,7 @@ export function Env<E extends string, Envs extends E[]>(validEnvs: Envs) {
     throw new Error('blah')
   }
 
-  function branch<T>(defaultValue: ConfigVal<T>, choices: Record<Env, ConfigVal<T>>): T;
+  function branch<T>(defaultValue: ConfigVal<T>, choices: Partial<Record<Env, ConfigVal<T>>>): T;
   function branch<T>(choices: Record<Env, ConfigVal<T>>): T;
   function branch<T>(defaultValue: any, choices?: any): T {
     const _env = env!
