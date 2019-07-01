@@ -49,7 +49,20 @@ export function configureCookieSession<Session, Flash extends Record<any,any>>(o
         req.session.flash[name] = value
       }
 
-      return sessionWrapper
+      //
+      // Wrap in proxy so userland can assign properties directly to session.
+      // Not recommended, but still supported.
+      //
+      return new Proxy(sessionWrapper, {
+        set(_obj, prop, value) {
+          if (prop === 'flash') {
+            console.warn("[session] Cannot set property 'flash'")
+            return false
+          }
+          req.session[prop] = value
+          return true
+        }
+      })
     },
     set(r: Request<any, any>, sessionData: Session) {
       ensureCookieMiddlewareHasBeenApplied(r)
