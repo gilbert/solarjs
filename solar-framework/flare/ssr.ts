@@ -1,8 +1,8 @@
 //
 // Page bundler for browser
 //
-import {Request} from '../server/bare-server'
-import {pagesRoute} from '../route'
+import {Request} from 'solarjs/server'
+import {pagesRoute} from 'solarjs/route'
 import {getStylesheets, flushTitle, flushHead} from './index'
 import {normalize} from 'path'
 import {JSX} from 'preact'

@@ -1,6 +1,6 @@
-import {bareServer, RequestError, Request, FullRequest} from './bare-server'
+import {server as bareServer, RequestError, Request, FullRequest} from 'solarjs/server'
 import {matchPage} from '../flare/ssr'
-import {publicRoute, stylesRoute} from '../route'
+import {publicRoute, stylesRoute} from 'solarjs/route'
 import {sendFile} from './send-file';
 import path from 'path'
 

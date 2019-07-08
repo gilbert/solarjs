@@ -1,7 +1,7 @@
 import { h } from 'preact'
 import { useState } from 'preact/hooks'
 import routes from '../routes'
-import { setTitle } from 'solarjs/flare';
+import { setTitle } from 'solar-framework/flare';
 
 type Props = {
   usernames: string[]

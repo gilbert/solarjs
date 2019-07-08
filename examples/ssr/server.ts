@@ -1,4 +1,4 @@
-import {bareServer, RequestError, renderPage, matchPage} from 'solarjs'
+import {bareServer, RequestError, renderPage, matchPage} from 'solar-framework'
 
 import routes from './routes'
 import homePage from './pages/home.page'

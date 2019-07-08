@@ -1,4 +1,4 @@
-import {Request} from '../server/bare-server'
+import {Request} from 'solarjs/server'
 import configure from 'cookie-session'
 
 type Options = Parameters<typeof configure>[0]

@@ -126,7 +126,7 @@ export class RequestError extends Error {
 }
 
 /** A bare serer without all the bells and whistles. */
-export function bareServer (handler: Handler) {
+export function server (handler: Handler) {
   return async function microWrap (req: IncomingMessage, res: ServerResponse) {
     try {
       const result = await handler(new Request('new', {}, req, res))

@@ -1,5 +1,5 @@
 import * as t from 'io-ts'
-import {RequestError} from './bare-server'
+import {RequestError} from './index'
 import {formatValidationError} from 'io-ts-reporters'
 
 export {t} // Re-export for convenience

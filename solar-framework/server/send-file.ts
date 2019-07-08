@@ -1,7 +1,7 @@
 //
 // Originally based off koa-send
 //
-import {Request, RequestError} from './bare-server'
+import {Request, RequestError} from 'solarjs/server'
 import * as fs from 'fs'
 const resolvePath = require('resolve-path')
 
