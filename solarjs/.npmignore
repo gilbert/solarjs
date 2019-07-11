@@ -1,2 +1,8 @@
 node_modules/
 package-lock.json
+
+# Ignore .ts files
+*.ts
+
+# But include .d.ts files
+!*.d.ts

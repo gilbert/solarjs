@@ -1,6 +1,6 @@
 {
   "name": "solar-framework",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A radically simple TypeScript node server framework.",
   "main": "index.js",
   "scripts": {
