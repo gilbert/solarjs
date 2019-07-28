@@ -27,6 +27,7 @@ export function bundlePage (src: string) {
             render(h(page, __PAGE_PROPS__), root, root.lastElementChild)
           `
         },
+        leaveIdsAlone: true,
         allowFallthrough: true,
         allowRelativeExternalFallthrough: true,
       }),
