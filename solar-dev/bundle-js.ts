@@ -33,7 +33,7 @@ export function bundlePage (src: string) {
       }),
       {
         resolveId(path) {
-          if (path === 'solarjs/flare') {
+          if (path === 'solar-framework/flare') {
             return require.resolve('./lib/browser.js')
           }
           return null
