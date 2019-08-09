@@ -22,8 +22,6 @@ export function configureCookieSession<Session, Flash extends Record<any,any>>(o
     if (! req.session) {
       // cookie-session is synchronous so we don't have to worry about async
       cookieSession(req, r.dangerouslyGetRes() as any, () => {})
-      // Init now for consistency
-      req.session.flash = {}
     }
   }
 
@@ -41,8 +39,11 @@ export function configureCookieSession<Session, Flash extends Record<any,any>>(o
       }
 
       sessionWrapper.flash = function (name?: any, value?: any) {
+        if (!req.session.flash) {
+          req.session.flash = {}
+        }
         if (name === undefined && value === undefined) {
-          const temp = req.session.flash || {}
+          const temp = req.session.flash
           req.session.flash = {}
           return temp
         }
