@@ -1,6 +1,6 @@
 {
   "name": "solarjs",
-  "version": "0.9.4",
+  "version": "0.10.0",
   "description": "A TypeScript web server library.",
   "main": "index.js",
   "scripts": {
