@@ -12,15 +12,20 @@ type NoContextWithUnexpected<F> =
   ? (params: T) => U | UnexpectedError
   : never
 
-export function makeRpcClient<T>(route: Route<{ proc: string }>) {
+type CsrfOptions = {
+  cookie?: string
+  header?: string
+}
+
+export function makeRpcClient<T>(route: Route<{ proc: string }>, opts: { csrf?: CsrfOptions } = {}) {
   return new Proxy({}, {
     get(_, proc: string) {
-      return rpc.bind(null, route.link({ proc }), proc)
+      return rpc.bind(null, route.link({ proc }), opts.csrf || {}, proc)
     }
   }) as { [Proc in keyof T]: NoContextWithUnexpected<T[Proc]> }
 }
 
-async function rpc(endpoint: string, proc: string, arg: any) {
+async function rpc(endpoint: string, csrf: CsrfOptions, proc: string, arg: any) {
   console.log(`[rpc] ${proc}(${JSON.stringify(arg)})`)
   return window.fetch(endpoint, {
     method: 'POST',
@@ -29,6 +34,7 @@ async function rpc(endpoint: string, proc: string, arg: any) {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Cache-Control': 'no-cache',
+      [csrf.header || 'x-csrf-token']: (document.cookie.match(new RegExp('(^| )' + (csrf.cookie || '_csrf') + '=([^;]+)')) || [])[2],
     },
     body: JSON.stringify(arg)
   })
