@@ -2,6 +2,7 @@ node_modules/
 pkg/
 examples/**/*.js
 solarjs/**/*.js
+solar-framework/**/*.js
 solar-dev/**/*.js
 !solar-dev/bin/*.js
 *.d.ts

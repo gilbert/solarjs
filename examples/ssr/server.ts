@@ -1,9 +1,10 @@
-import {bareServer, RequestError, renderPage, matchPage} from 'solar-framework'
+import {bareServer, RequestError, makeRenderPage, matchPage} from 'solar-framework'
 
 import routes from './routes'
 import homePage from './pages/home.page'
 import userPage from './pages/user.page'
 
+const renderPage = makeRenderPage(null)
 
 export default bareServer(async r => {
   let m;

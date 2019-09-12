@@ -1,6 +1,8 @@
 //
 // HTML doc helpers
 //
+import {stylesRoute} from 'solarjs/route'
+
 export function flushTitle() { return document.title }
 export function setTitle(title: string) { document.title = title; return '' }
 
@@ -32,4 +34,8 @@ export function css(id: string, styles: string) {
       cache[id] = true
     }
   }
+}
+
+export function cssEntryPath(entry: string) {
+  return stylesRoute.link({ entry })
 }

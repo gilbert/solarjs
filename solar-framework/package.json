@@ -1,6 +1,6 @@
 {
   "name": "solar-framework",
-  "version": "0.9.1",
+  "version": "0.13.2",
   "description": "A radically simple TypeScript node server framework.",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,7 @@
     "preact-render-to-string": "^5.0.3"
   },
   "devDependencies": {
+    "resolve-path": "^1.4.0",
     "solar-dev": "file:../solar-dev",
     "solarjs": "file:../solarjs",
     "ts-node": "^8.0.3",

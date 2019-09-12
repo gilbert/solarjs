@@ -1,3 +1,5 @@
+import {stylesRoute} from 'solarjs/route'
+
 //
 // HTML doc helpers
 //
@@ -42,4 +44,8 @@ export function css(id: string, styles: string) {
 export function getStylesheets() {
   const temp = sheets
   return sheets = {}, temp
+}
+
+export function cssEntryPath(entry: string) {
+  return stylesRoute.link({ entry })
 }
